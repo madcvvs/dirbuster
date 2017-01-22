@@ -4,7 +4,7 @@ require "net/https"
 require "uri"
 
 def browse(website)
-	File.readlines('list.txt').eac do |line|
+	File.readlines('list.txt').each do |line|
 	
 		url = "#{website}/#{line}".chomp
 		res = Net::HTTP.get_response(URI(url))
