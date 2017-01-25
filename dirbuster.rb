@@ -2,52 +2,59 @@
 
 require "net/https"
 require "uri"
+require "threads"
 
-def browse(website)
-	File.readlines('list.txt').each do |line|
+arr = []
+
+start = Time.now
+
+def browse(website, startcount, times)
+	count = 0
+	while count < times
+	
+		equation = (count/times.to_f)*100
+		percent = sprintf("%.1f", equation)
+		startcount = startcount + 1
+		line = IO.readlines("list.txt")[startcount]
+		
 		file = "results.txt"
 		url = "#{website}/#{line}".chomp
 		res = Net::HTTP.get_response(URI(url))
 		code = res.code
-		
+	
 		if code == "200"
-			print "\033[0;32m#{code} - #{website}#{line}\033[0m"
+			print "#{percent.to_f}% - \033[0;32m#{code} - #{website}#{line}\033[0m"
 			open('results.txt', 'a') { |f|
 				f.puts "#{code} - #{website}#{line}"
 			}
 		elsif code == "404"
-			print "\033[0;31m#{code} - #{website}#{line}\033[0m"
+			print "#{percent.to_f}% - \033[0;31m#{code} - #{website}#{line}\033[0m"
 		else
-			print "\033[0;33m#{code} - #{website}#{line}\033[0m"
+			print "#{percent.to_f}% - \033[0;33m#{code} - #{website}#{line}\033[0m"
 			open('results.txt', 'a') { |f|
-				f.puts "#{code} - #{website}#{line}"
+				f.puts "#{code} - #{website}#{line}" 
 			}
 		end
+	count = count + 1
 	end
-	puts "Results are saved in \033[0;32m#{file}!\033[0m"
 end
 
 print "Website: "
 website = gets.chomp
 
-# If website starts with http://
-if website.start_with? "http://"
+# Threads
+t1 = Thread.new{browse(website + "/", 0, 4654)}
+t2 = Thread.new{browse(website + "/", 4654, 9308)}
+t3 = Thread.new{browse(website + "/", 9308, 13962)}
+t4 = Thread.new{browse(website + "/", 13962, 18616)}
+t5 = Thread.new{browse(website + "/", 18616, 23272)}
 
-	if website.end_with? "/"
-		browse(website)
-	else
-		website = website.concat("/")
-		browse(website)
-	end
-
-elsif website.start_with? "https://"
-
-	if website.end_with? "/"
-		browse(website)
-	else
-		website = website.concat("/")
-		browse(website)
-	end
+# Start threads at the same time
+t1.join
+t2.join
+t3.join
+t4.join
+t5.join
 	
 else
 	print "URL needs to start with http:// or https://"
