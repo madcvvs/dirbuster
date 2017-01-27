@@ -2,11 +2,8 @@
 
 require "net/https"
 require "uri"
-require "threads"
 
 arr = []
-
-start = Time.now
 
 def browse(website, startcount, times)
 	count = 0
