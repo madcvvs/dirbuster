@@ -14914,7 +14914,7 @@ systemv
 systemsoft
 systems
 systemfive
-system\
+system
 systat
 sysp6
 sysp5
